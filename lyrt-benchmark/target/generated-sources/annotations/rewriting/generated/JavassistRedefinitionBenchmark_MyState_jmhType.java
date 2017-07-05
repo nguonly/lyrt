@@ -1,0 +1,4 @@
+package rewriting.generated;
+public class JavassistRedefinitionBenchmark_MyState_jmhType extends JavassistRedefinitionBenchmark_MyState_jmhType_B3 {
+}
+

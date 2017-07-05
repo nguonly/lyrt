@@ -1,0 +1,4 @@
+package binding.generated;
+public class WithConsistencyInvocationBenchmark_MyState_jmhType extends WithConsistencyInvocationBenchmark_MyState_jmhType_B3 {
+}
+

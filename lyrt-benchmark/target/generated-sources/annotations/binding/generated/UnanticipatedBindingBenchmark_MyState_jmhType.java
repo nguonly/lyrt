@@ -1,0 +1,4 @@
+package binding.generated;
+public class UnanticipatedBindingBenchmark_MyState_jmhType extends UnanticipatedBindingBenchmark_MyState_jmhType_B3 {
+}
+

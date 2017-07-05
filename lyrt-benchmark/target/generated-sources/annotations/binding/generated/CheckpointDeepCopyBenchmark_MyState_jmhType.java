@@ -1,0 +1,4 @@
+package binding.generated;
+public class CheckpointDeepCopyBenchmark_MyState_jmhType extends CheckpointDeepCopyBenchmark_MyState_jmhType_B3 {
+}
+

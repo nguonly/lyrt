@@ -1,0 +1,4 @@
+package rewriting.generated;
+public class ByteBuddyRedefinitionBenchmark_MyState_jmhType extends ByteBuddyRedefinitionBenchmark_MyState_jmhType_B3 {
+}
+

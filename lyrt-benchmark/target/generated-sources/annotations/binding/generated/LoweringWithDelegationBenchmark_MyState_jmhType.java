@@ -1,0 +1,4 @@
+package binding.generated;
+public class LoweringWithDelegationBenchmark_MyState_jmhType extends LoweringWithDelegationBenchmark_MyState_jmhType_B3 {
+}
+

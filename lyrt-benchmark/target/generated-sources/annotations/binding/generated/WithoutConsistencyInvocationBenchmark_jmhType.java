@@ -1,0 +1,4 @@
+package binding.generated;
+public class WithoutConsistencyInvocationBenchmark_jmhType extends WithoutConsistencyInvocationBenchmark_jmhType_B3 {
+}
+
