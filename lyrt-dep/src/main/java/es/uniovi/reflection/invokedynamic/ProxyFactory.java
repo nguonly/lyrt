@@ -26,20 +26,32 @@ import java.util.HashMap;
 public class ProxyFactory {
 
 	
-	private static HashMap<String, Class<?>> classDescriptor = new HashMap<String, Class<?>>();
+	public static HashMap<String, Class<?>> classDescriptor = new HashMap<String, Class<?>>();
 	
-	private static final HashMap<MemberBSClass<?>, Callable<?>> invokedynamicClass = new HashMap<MemberBSClass<?>, Callable<?>>();
-	private static final HashMap<MemberBIClass<?>, MemberBIClass<?>> memberMethod = new HashMap<MemberBIClass<?>, MemberBIClass<?>>();
+	public static final HashMap<MemberBSClass<?>, Callable<?>> invokedynamicClass = new HashMap<MemberBSClass<?>, Callable<?>>();
+	public static final HashMap<MemberBIClass<?>, MemberBIClass<?>> memberMethod = new HashMap<MemberBIClass<?>, MemberBIClass<?>>();
 	
 	private static final HashMap<Field, GetProperty<?>>  fieldGetClass = new HashMap<Field, GetProperty<?>>();
 	private static final HashMap<Field, SetProperty>  fieldSetClass = new HashMap<Field, SetProperty>();
-	private static final HashMap<Method,Callable<?>> methodsClass = new HashMap<Method,Callable<?>>();
+	public static final HashMap<Method,Callable<?>> methodsClass = new HashMap<Method,Callable<?>>();
 		
-	private static final HashMap<MemberClass<?>, Callable<?>> memberClass = new HashMap<MemberClass<?>,Callable<?> >();
+	public static final HashMap<MemberClass<?>, Callable<?>> memberClass = new HashMap<MemberClass<?>,Callable<?> >();
 	private static final HashMap<ConstructorClass<?>, Constructor<?>> constructorClass = new HashMap<ConstructorClass<?>,Constructor<?> >();
 	private static final HashMap<PropertyClass<?>, GetProperty<?>> propertyGetClass = new HashMap<PropertyClass<?>, GetProperty<?>>();
 	private static final HashMap<PropertyClass<?>, SetProperty> propertySetClass = new HashMap<PropertyClass<?>, SetProperty>();
-			
+
+	public static void clearAllCached(){
+		classDescriptor.clear();
+		invokedynamicClass.clear();
+		memberMethod.clear();
+		fieldGetClass.clear();
+		fieldSetClass.clear();
+		methodsClass.clear();
+		memberClass.clear();
+		constructorClass.clear();
+		propertyGetClass.clear();
+		propertySetClass.clear();
+	}
 	/**
 	 * Performs dynamic invocations to methods, fields and constructors received as a parameter.
 	 * If the member to be invoked is static, object is ignored (null should be passed).

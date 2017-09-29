@@ -16,6 +16,7 @@ public abstract class BaseTest {
     @Before
     public void beforeEachTest(){
         //_reg.setRelations(new ArrayDeque<>());
+        _reg.isUnanticipated=false;
     }
 
     @After

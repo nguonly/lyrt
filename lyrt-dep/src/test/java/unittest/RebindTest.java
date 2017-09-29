@@ -44,7 +44,7 @@ public class RebindTest extends BaseTest{
 
         Role emp;
         try(InitBindingBlock ib = comp.initBinding()){
-            emp = lycog.bind(Employee.class);
+            emp = (Employee)lycog.bind(Employee.class);
             emp.bind(Student.class);
         }
 

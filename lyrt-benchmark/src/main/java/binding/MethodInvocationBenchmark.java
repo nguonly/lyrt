@@ -52,6 +52,7 @@ public class MethodInvocationBenchmark {
         System.out.println(o);
     }
 
+
     @State(Scope.Thread)
     public static class MyState {
 
@@ -235,25 +236,25 @@ public class MethodInvocationBenchmark {
         blackhole.consume(s.coreWithTwoRoles.invoke("method", String.class, s.stringValue));
     }
 
-    @Benchmark
-    public void jdkProxy(MyState s, Blackhole blackhole){
-        blackhole.consume(s.jdkProxyInstance.method(s.stringValue));
-    }
+//    @Benchmark
+//    public void jdkProxy(MyState s, Blackhole blackhole){
+//        blackhole.consume(s.jdkProxyInstance.method(s.stringValue));
+//    }
 
     @Benchmark
     public void javassistProxy(MyState s, Blackhole blackhole){
         blackhole.consume(s.javassistInstance.method(s.stringValue));
     }
 
-    @Benchmark
-    public void bytebuddyProxy(MyState s, Blackhole blackhole){
-        blackhole.consume(s.bytebuddyInstance.method(s.stringValue));
-    }
-
-    @Benchmark
-    public void cglibProxy(MyState s, Blackhole b){
-        b.consume(s.cglibInstance.method(s.stringValue));
-    }
+//    @Benchmark
+//    public void bytebuddyProxy(MyState s, Blackhole blackhole){
+//        blackhole.consume(s.bytebuddyInstance.method(s.stringValue));
+//    }
+//
+//    @Benchmark
+//    public void cglibProxy(MyState s, Blackhole b){
+//        b.consume(s.cglibInstance.method(s.stringValue));
+//    }
 
     @Benchmark
     public void indyDirectInvocation(MyState s, Blackhole blackhole){
@@ -268,8 +269,14 @@ public class MethodInvocationBenchmark {
     }
 
     @Benchmark
-    public void reflectionInvocation(MyState s, Blackhole b) throws InvocationTargetException, IllegalAccessException {
+    public void cachedReflectionInvocation(MyState s, Blackhole b) throws InvocationTargetException, IllegalAccessException {
         b.consume(s.reflectionMethod.invoke(s.indyCore, s.stringValue));
+    }
+
+    @Benchmark
+    public void woCachedReflectionInvocation(MyState s, Blackhole b) throws InvocationTargetException, IllegalAccessException {
+        Method method = s.reflection();
+        b.consume(method.invoke(s.indyCore, s.stringValue));
     }
 
     @Benchmark
@@ -277,12 +284,12 @@ public class MethodInvocationBenchmark {
         b.consume(s.indyCore.method(s.stringValue));
     }
 
-    @Benchmark
-    public void staticInvocation5(MyState s, Blackhole b){
-        b.consume(s.indyCore.method(s.stringValue));
-        b.consume(s.indyCore.method(s.stringValue));
-        b.consume(s.indyCore.method(s.stringValue));
-        b.consume(s.indyCore.method(s.stringValue));
-        b.consume(s.indyCore.method(s.stringValue));
-    }
+//    @Benchmark
+//    public void staticInvocation5(MyState s, Blackhole b){
+//        b.consume(s.indyCore.method(s.stringValue));
+//        b.consume(s.indyCore.method(s.stringValue));
+//        b.consume(s.indyCore.method(s.stringValue));
+//        b.consume(s.indyCore.method(s.stringValue));
+//        b.consume(s.indyCore.method(s.stringValue));
+//    }
 }

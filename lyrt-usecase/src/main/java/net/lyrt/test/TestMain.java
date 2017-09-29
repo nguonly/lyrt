@@ -1,5 +1,10 @@
 package net.lyrt.test;
 
+import net.lyrt.Registry;
+import net.lyrt.unanticipation.ClassReloader;
+
+import java.io.File;
+
 /**
  * Created by nguonly on 6/25/17.
  */
@@ -13,5 +18,12 @@ public class TestMain {
 
         o1.display();
         o2.display();
+
+        Registry reg = Registry.getRegistry();
+        reg.isUnanticipated = true;
+        ClassReloader.classPath = "lyrt-usecase" + File.separator + "target" + File.separator + "classes";
+        TestObject to = reg.newCore(TestObject.class);
+
+        System.out.println(to);
     }
 }

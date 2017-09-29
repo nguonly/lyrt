@@ -22,14 +22,15 @@ public class WithConsistencyInvocationBenchmark {
     @State(Scope.Thread)
     public static class MyState{
         public CoreObject coreObject;
-
         public Compartment compartment;
 
         ConsistencyBlock consistencyBlock;
+
         private String stringValue = "";
 
         Registry reg = Registry.getRegistry();
-        @Setup
+
+        @Setup(Level.Invocation)
         public void setup(){
             compartment = reg.newCompartment(Compartment.class);
 
@@ -43,7 +44,7 @@ public class WithConsistencyInvocationBenchmark {
             consistencyBlock = new ConsistencyBlock();
         }
 
-        @TearDown
+        @TearDown(Level.Invocation)
         public void tearDown(){
             consistencyBlock.close();
         }
@@ -53,4 +54,5 @@ public class WithConsistencyInvocationBenchmark {
     public void withConsistency(MyState s, Blackhole b){
         b.consume(s.coreObject.invoke("method", String.class, s.stringValue));
     }
+
 }

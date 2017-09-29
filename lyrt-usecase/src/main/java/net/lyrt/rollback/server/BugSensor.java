@@ -28,5 +28,6 @@ public class BugSensor implements Thread.UncaughtExceptionHandler {
         //Rollback
         ControlUnit controlUnit = new ControlUnit();
         controlUnit.rollback();
+
     }
 }

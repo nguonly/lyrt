@@ -1,5 +1,7 @@
 package net.lyrt;
 
+import net.lyrt.unanticipation.ClassReloader;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +15,21 @@ public class ReflectionHelper {
             T obj;
 
             Class<?>[] paramTypes;
+            Class<T> loadingClass = clazz;
 
-            //Dynamic reload the class
-//            Class<?> dynClass = new ClassReloader().loadClass(clazz);
+            if(Registry.getRegistry().isUnanticipated && isRoleType(clazz)) {
+                //Dynamic reload the class
+                loadingClass = (Class<T>) new ClassReloader().loadClass(clazz);
+            }
 
             if (args != null && args.length > 0) {
                 paramTypes = getParameterTypes(args);
 //                Constructor<T> constr = (Constructor<T>)dynClass.getConstructor(paramTypes);
-                Constructor<T> constr = clazz.getConstructor(paramTypes);
+                Constructor<T> constr = loadingClass.getConstructor(paramTypes);
                 obj = constr.newInstance(args);
             } else {
-//                obj = (T)dynClass.newInstance();
-                obj = clazz.newInstance();
+//                obj = dynClass.newInstance();
+                obj = loadingClass.newInstance();
             }
 
             return obj;
@@ -33,6 +38,15 @@ public class ReflectionHelper {
         }
 
         return null;
+    }
+
+    private static boolean isRoleType(Class<?> clazz){
+        Class<?>[] clazzes = clazz.getInterfaces();
+        for(int i=0; i<clazzes.length; i++){
+            if(clazzes[i].equals(IRole.class)) return true;
+        }
+
+        return false;
     }
 
     public static List<Class<?>> getAllSuperClassesAndInterfaces(Class<?> clazz) {

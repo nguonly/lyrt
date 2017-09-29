@@ -23,6 +23,12 @@ public class UnbindingBenchmark {
         makeUnbinding(s.compartments[0], s.coreObjects[0]);
     }
 
+    //@Param({"0", "1", "2", "3", "4"})
+    @Param({"0", "1"})
+    private int ARGS;
+
+    private static int[] params = new int[]{10, 100, 1000, 5000, 10000};
+
     @State(Scope.Thread)
     public static class MyState{
         public Compartment[] compartments;
@@ -32,18 +38,17 @@ public class UnbindingBenchmark {
 
         @Setup(Level.Invocation)
         public void setup(){
-            int NUM = 4;
+            int NUM = params.length;
 
             compartments = new Compartment[NUM];
             coreObjects = new CoreObject[NUM][];
 
             for(int i=0; i<NUM; i++){
                 compartments[i] = reg.newCompartment(Compartment.class);
-                int amount = (int)Math.pow(10, i+1);
+//                int amount = (int)Math.pow(10, i+1);
+                int amount = params[i];
                 coreObjects[i] = new CoreObject[amount];
                 BindingBenchmark.makeBinding(compartments[i], coreObjects[i], amount);
-//                System.out.println(coreObjects[i].length);
-//                compartments[i].activate();
             }
         }
     }
@@ -57,22 +62,27 @@ public class UnbindingBenchmark {
     }
 
     @Benchmark
-    public void unbinding10(MyState s){
-        makeUnbinding(s.compartments[0], s.coreObjects[0]);
+    public void unbinding(MyState s){
+        makeUnbinding(s.compartments[ARGS], s.coreObjects[ARGS]);
     }
 
-    @Benchmark
-    public void unbinding100(MyState s){
-        makeUnbinding(s.compartments[1], s.coreObjects[1]);
-    }
-
-    @Benchmark
-    public void unbinding1000(MyState s){
-        makeUnbinding(s.compartments[2], s.coreObjects[2]);
-    }
-
-    @Benchmark
-    public void unbinding10000(MyState s){
-        makeUnbinding(s.compartments[3], s.coreObjects[3]);
-    }
+//    @Benchmark
+//    public void unbinding10(MyState s){
+//        makeUnbinding(s.compartments[0], s.coreObjects[0]);
+//    }
+//
+//    @Benchmark
+//    public void unbinding100(MyState s){
+//        makeUnbinding(s.compartments[1], s.coreObjects[1]);
+//    }
+//
+//    @Benchmark
+//    public void unbinding1000(MyState s){
+//        makeUnbinding(s.compartments[2], s.coreObjects[2]);
+//    }
+//
+//    @Benchmark
+//    public void unbinding10000(MyState s){
+//        makeUnbinding(s.compartments[3], s.coreObjects[3]);
+//    }
 }

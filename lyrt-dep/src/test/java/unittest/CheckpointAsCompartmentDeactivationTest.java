@@ -87,7 +87,7 @@ public class CheckpointAsCompartmentDeactivationTest extends BaseTest {
 
         Role a;
         try(InitBindingBlock ib = c21.initBinding()){
-            a = ely.bind(A.class);
+            a = (A)ely.bind(A.class);
         }
 
         try(InitBindingBlock ib = c22.initBinding()){

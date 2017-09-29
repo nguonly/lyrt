@@ -4,7 +4,7 @@ package net.lyrt.snake;
  * Created by nguonly on 6/25/17.
  */
 public class Cell {
-    final static int CELL_TYPE_EMPTY = 0,
+    final public static int CELL_TYPE_EMPTY = 0,
             CELL_TYPE_FOOD = 10,
             CELL_TYPE_SNAKE_NODE = 20,
             CELL_TYPE_OBSTACLE = 30;

@@ -1,6 +1,7 @@
 package unittest;
 
 import net.lyrt.Compartment;
+import net.lyrt.IPlayer;
 import net.lyrt.Player;
 import net.lyrt.Role;
 import org.junit.Assert;
@@ -47,7 +48,7 @@ public class AsynchronousBindingTest extends BaseTest {
         comp.deactivate();
     }
 
-    public static class Person extends Player {
+    public static class Person implements IPlayer {
         private String name;
 
         public void setName(String name){

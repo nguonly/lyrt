@@ -1,5 +1,7 @@
 package net.lyrt.snake;
 
+import net.lyrt.IPlayer;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -8,7 +10,7 @@ import java.awt.event.KeyEvent;
 /**
  * Created by nguonly on 6/25/17.
  */
-public class BoardPanel extends JLayeredPane {
+public class BoardPanel extends JLayeredPane implements IPlayer{
     final int DOT_SIZE = SnakeGame.DOT_SIZE;
 
     private SnakeGame game;

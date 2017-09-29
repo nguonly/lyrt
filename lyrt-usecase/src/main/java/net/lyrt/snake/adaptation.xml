@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<adaptation>
+    <compartment id="1637070917" >
+        <bind coreId="420521101" roleType="net.lyrt.snake.unanticipation.Obstacle" >
+            <invoke method="defineObstacle" returnType="void" />
+            <!--<invoke method="clearAllObstacles" returnType="void" />-->
+        </bind>
+        <bind coreId="1080538316" roleType="net.lyrt.snake.unanticipation.MovingFood" />
+        <!--<unbind coreId="1880587981" roleType="net.runtime.role.snake.MovingFood" />-->
+        <bind coreId="2045703078" roleType="net.lyrt.snake.unanticipation.PassingWall" />
+        <!--<unbind coreId="1950409828" roleType="net.runtime.role.snake.PassingWall" />-->
+    </compartment><!-- -->
+</adaptation>

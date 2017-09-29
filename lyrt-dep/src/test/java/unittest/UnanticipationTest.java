@@ -28,14 +28,21 @@ public class UnanticipationTest extends BaseTest {
 
         System.out.println(strXML);
 
+        //mock the runtime
+        _reg.isUnanticipated = true;
+
         UnanticipatedXMLParser.parse(strXML);
 
         Assert.assertEquals("Student", lycog.invoke("speak", String.class));
 
         String unbindingXML = XMLConstructor.getXMLUnbindBaseOperation(comp.hashCode(), lycog.hashCode(), true, Student.class.getTypeName());
 
+        System.out.println(unbindingXML);
+
+        DumpHelper.dumpRelations(comp);
         UnanticipatedXMLParser.parse(unbindingXML);
 
+        DumpHelper.dumpRelations(comp  );
         Assert.assertEquals("Person", lycog.invoke("speak", String.class));
     }
 
@@ -87,6 +94,9 @@ public class UnanticipationTest extends BaseTest {
     public void testRebind(){
         Compartment comp = _reg.newCompartment(Compartment.class);
         Person lycog = _reg.newCore(Person.class, "lycog");
+
+        //mock the runtime
+        _reg.isUnanticipated = true;
 
         try(InitBindingBlock ib = comp.initBinding()){
             lycog.bind(Student.class);

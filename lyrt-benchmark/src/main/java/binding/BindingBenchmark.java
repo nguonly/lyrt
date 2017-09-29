@@ -12,6 +12,7 @@ import es.uniovi.reflection.invokedynamic.util.MethodSignature;
 import net.lyrt.Compartment;
 import net.lyrt.MethodSig;
 import net.lyrt.Registry;
+import net.lyrt.Role;
 import net.lyrt.block.InitBindingBlock;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
@@ -97,44 +98,77 @@ public class BindingBenchmark {
         }
     }
 
+    public static <T extends Role> void makeBinding(Compartment compartment, CoreObject[] cores, int amount, Class<T> roleType){
+//        Registry reg = Registry.getRegistry();
+
+//        cores = new CoreObject[amount];
+//            System.out.println(cores.length);
+//        for(int i=0; i<amount; i++){
+//            cores[i] = reg.newCore(CoreObject.class);
+//        }
+
+        try(InitBindingBlock ib = compartment.initBinding()){
+            for(int i=0; i<amount; i++){
+                cores[i].bind(roleType);
+            }
+        }
+    }
+
+
+    @Param({"0", "1", "2", "3", "4"})
+    public int ARGS;
+
     @State(Scope.Thread)
     public static class MyState{
         public Compartment[] compartments;
         public CoreObject[][] coreObjects;
 
+        private int params[] = new int[]{10, 100, 1000, 5000, 10000};
+
         Registry reg = Registry.getRegistry();
 
-        @Setup
+        @Setup(Level.Invocation)
         public void setup(){
-            int NUM = 4;
+            int NUM = params.length;
 
             compartments = new Compartment[NUM];
             coreObjects = new CoreObject[NUM][];
 
             for(int i=0; i<NUM; i++){
                 compartments[i] = reg.newCompartment(Compartment.class);
-                coreObjects[i] = new CoreObject[(int)Math.pow(10, i+1)];
+//                int numCore = (int)Math.pow(10, i+1);
+                int numCore = params[i];
+                coreObjects[i] = new CoreObject[numCore];
+
+                for(int j=0; j<numCore; j++){
+                    coreObjects[i][j] = reg.newCore(CoreObject.class);
+                }
             }
         }
     }
 
     @Benchmark
-    public void binding10(MyState state){
-        makeBinding(state.compartments[0], state.coreObjects[0], 10);
+    public void binding(MyState state){
+        makeBinding(state.compartments[ARGS], state.coreObjects[ARGS], state.params[ARGS]);
     }
 
-    @Benchmark
-    public void binding100(MyState state){
-        makeBinding(state.compartments[1], state.coreObjects[1], 100);
-    }
-
-    @Benchmark
-    public void binding1000(MyState state){
-        makeBinding(state.compartments[2], state.coreObjects[2], 1000);
-    }
-
-    @Benchmark
-    public void binding10000(MyState state){
-        makeBinding(state.compartments[3], state.coreObjects[3], 10000);
-    }
+//    @Benchmark
+//    public void binding10(MyState state){
+//        makeBinding(state.compartments[0], state.coreObjects[0], 10);
+//    }
+//
+//    @Benchmark
+//    public void binding100(MyState state){
+//        makeBinding(state.compartments[1], state.coreObjects[1], 100);
+//    }
+//
+//    @Benchmark
+//    public void binding1000(MyState state){
+//        makeBinding(state.compartments[2], state.coreObjects[2], 1000);
+//    }
+//
+//    @Benchmark
+//    public void binding10000(MyState state){
+//        makeBinding(state.compartments[3], state.coreObjects[3], 10000);
+//    }
 }

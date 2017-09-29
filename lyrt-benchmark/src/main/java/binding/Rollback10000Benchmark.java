@@ -49,7 +49,7 @@ public class Rollback10000Benchmark {
     }
 
     @Benchmark
-    public void rollback1000(MyState state){
+    public void rollback10000(MyState state){
         state.controlUnit.rollback(state.compartment);
     }
 }

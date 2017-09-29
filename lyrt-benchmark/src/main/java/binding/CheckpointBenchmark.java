@@ -24,11 +24,13 @@ public class CheckpointBenchmark {
         public CoreObject[] coreObjects10;
         public CoreObject[] coreObjects100;
         public CoreObject[] coreObjects1000;
+        public CoreObject[] coreObjects5000;
         public CoreObject[] coreObjects10000;
 
         public Compartment compartment10;
         public Compartment compartment100;
         public Compartment compartment1000;
+        public Compartment compartment5000;
         public Compartment compartment10000;
 
         public Registry reg = Registry.getRegistry();
@@ -41,11 +43,13 @@ public class CheckpointBenchmark {
             compartment10 = reg.newCompartment(Compartment.class);
             compartment100 = reg.newCompartment(Compartment.class);
             compartment1000 = reg.newCompartment(Compartment.class);
+            compartment5000 = reg.newCompartment(Compartment.class);
             compartment10000 = reg.newCompartment(Compartment.class);
 
             makeBinding(compartment10, coreObjects10, 10);
             makeBinding(compartment100, coreObjects100, 100);
             makeBinding(compartment1000, coreObjects1000, 1000);
+            makeBinding(compartment5000, coreObjects5000, 5000);
             makeBinding(compartment10000, coreObjects10000, 10000);
 
         }
@@ -87,24 +91,18 @@ public class CheckpointBenchmark {
     }
 
     @Benchmark
-    public void checkPoint10000(MyState state){
-        state.controlUnit.checkpoint(state.compartment10000);
+    public void checkPoint5000(MyState state){
+        state.controlUnit.checkpoint(state.compartment5000);
     }
 
     @Benchmark
-    public void copyRelation10(MyState state){
-        state.controlUnit.copyRelations(state.compartment10);
+    public void checkPoint10000(MyState state){
+        state.controlUnit.checkpoint(state.compartment10000);
     }
-
+//
 //    @Benchmark
-//    public void kryoShallowCopy(MyState state){
-//        Kryo kryo = new Kryo();
-//        Object obj = kryo.copyShallow(state.coreObjects10[0]);
+//    public void copyRelation10(MyState state){
+//        state.controlUnit.copyRelations(state.compartment10);
 //    }
-
-//    @Benchmark
-//    public void kryoDeepCopy(MyState state){
-//        Kryo kryo = new Kryo();
-//        Object obj = kryo.copy(state.coreObjects[0]);
-//    }
+//
 }

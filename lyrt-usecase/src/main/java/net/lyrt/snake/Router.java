@@ -1,9 +1,11 @@
 package net.lyrt.snake;
 
+import net.lyrt.Player;
+
 /**
  * Created by nguonly on 6/25/17.
  */
-public class Router {
+public class Router extends Player {
     //public static final int DIRECTION_NONE = 0, DIRECTION_RIGHT = 1, DIRECTION_LEFT = -1, DIRECTION_UP = 2, DIRECTION_DOWN = -2;
     public static final int DIRECTION_NONE = -1, DIRECTION_RIGHT = 0, DIRECTION_LEFT = 1, DIRECTION_UP = 2, DIRECTION_DOWN = 3;
     private Snake snake;
@@ -30,7 +32,8 @@ public class Router {
         if (!gameOver) {
             if (direction != DIRECTION_NONE) {
 
-                Cell nextCell = getNextCell(snake.head);
+//                Cell nextCell = getNextCell(snake.head);
+                Cell nextCell = invoke("getNextCell", Cell.class, snake.head);
                 //Cell nextCell = RegistryManager.getInstance().invokeRole(null, this, "getNextCell", Cell.class,
                 //        new Class[]{Cell.class}, new Object[]{snake.getHead()});
 

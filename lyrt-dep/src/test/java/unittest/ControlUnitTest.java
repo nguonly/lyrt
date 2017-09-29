@@ -6,6 +6,7 @@ import net.lyrt.Relation;
 import net.lyrt.Role;
 import net.lyrt.block.AdaptationBlock;
 import net.lyrt.block.InitBindingBlock;
+import net.lyrt.helper.DumpHelper;
 import net.lyrt.rollback.ControlUnit;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class ControlUnitTest extends BaseTest{
         controlUnit.checkpoint();
 
         long threadId = Thread.currentThread().getId();
-        Stack<ArrayDeque<Relation>> stackVersion = _reg.getRollbackStacks().get(threadId);
+        Stack<ArrayDeque<Relation>> stackVersion = _reg.getRollbackStacks().get(comp.hashCode());
         Assert.assertEquals(1, stackVersion.size());
 
         p.bind(B.class).bind(C.class);
@@ -86,6 +87,8 @@ public class ControlUnitTest extends BaseTest{
         Compartment comp = _reg.newCompartment(Compartment.class);
         ControlUnit controlUnit = new ControlUnit();
 
+        _reg.isUnanticipated=false;
+
         comp.activate();
 
         try(AdaptationBlock ac = new AdaptationBlock()) {
@@ -119,6 +122,38 @@ public class ControlUnitTest extends BaseTest{
 
         Assert.assertEquals("Person", p.invoke("doThing", String.class));
 
+    }
+
+    @Test
+    public void rollbackOnEmptyStack(){
+        Compartment comp = _reg.newCompartment(Compartment.class);
+        Person lycog = _reg.newCore(Person.class);
+
+        comp.activate();
+
+        try(AdaptationBlock ib = new AdaptationBlock()){
+            lycog.bind(A.class).bind(B.class);
+        }
+        DumpHelper.dumpStacks(comp);
+        DumpHelper.dumpRelations(comp);
+
+        ControlUnit cu = new ControlUnit();
+
+        cu.rollback(comp);
+
+        DumpHelper.dumpRelations(comp);
+
+        try(AdaptationBlock ib = new AdaptationBlock()){
+            lycog.bind(A.class).bind(B.class);
+        }
+
+        DumpHelper.dumpRelations(comp);
+        DumpHelper.dumpStacks(comp);
+
+        cu.rollback(comp);
+
+        DumpHelper.dumpRelations(comp);
+        DumpHelper.dumpStacks(comp);
     }
 
     public static class Person extends Player {

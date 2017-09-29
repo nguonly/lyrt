@@ -7,6 +7,7 @@ public class XMLConstructor {
     private StringBuffer buffer = new StringBuffer();
 
     public void openClosure(){
+        buffer = new StringBuffer();
         buffer.append("<?xml version=\"1.0\"?>\n");
         buffer.append("<adaptation>\n");
     }

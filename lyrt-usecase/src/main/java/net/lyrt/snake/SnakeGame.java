@@ -1,6 +1,9 @@
 package net.lyrt.snake;
 
+import net.lyrt.Compartment;
 import net.lyrt.Registry;
+import net.lyrt.helper.DumpHelper;
+import net.lyrt.unanticipation.FileWatcher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,13 +45,18 @@ public class SnakeGame extends JFrame implements ActionListener {
 
     Registry registry = Registry.getRegistry();
 
-    public SnakeGame(Board board, Snake snake, Router router){
+    Compartment compartment;
+
+    public SnakeGame(Compartment compartment, Board board, Snake snake, Router router){
         this.board = board;
         this.snake = snake;
         this.router = router;
+        this.compartment = compartment;
 
-        boardPanel = new BoardPanel(this);
-//        boardPanel = registry.newCore(BoardPanel.class, this);
+        this.compartment.activate();
+
+//        boardPanel = new BoardPanel(this);
+        boardPanel = registry.newCore(BoardPanel.class, this);
 //        boardPanel = RegistryManager.getInstance().newPlayer(BoardPanel.class, new Class[]{SnakeGame.class}, new Object[]{this});
         statusPanel = new StatusPanel();
         statisticsPanel = new StatisticsPanel(this);
@@ -123,61 +131,72 @@ public class SnakeGame extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args){
-
-        Board board = new Board(SnakeGame.ROW_COUNT, SnakeGame.COL_COUNT);
+        Registry reg = Registry.getRegistry();
+//        Board board = new Board(SnakeGame.ROW_COUNT, SnakeGame.COL_COUNT);
 //        //Board board = Player.initialize(Board.class, new Class[]{int.class, int.class}, new Object[]{SnakeGame.ROW_COUNT, SnakeGame.COL_COUNT});
 //        Board board = RegistryManager.getInstance().newPlayer(Board.class, new Class[]{int.class, int.class}, new Object[]{SnakeGame.ROW_COUNT, SnakeGame.COL_COUNT});
+
+//        Board board = reg.newCore(Board.class, SnakeGame.ROW_COUNT, SnakeGame.COL_COUNT);
 //
 //        Snake snake = new Snake(new Cell(5, 6));
-        Snake snake = new Snake(board, 5, 6);
-        Router router = new Router(snake, board);
-//        Router router = RegistryManager.getInstance().newPlayer(Router.class, new Class[]{Snake.class, Board.class}, new Object[]{snake, board});
+//        Snake snake = new Snake(board, 5, 6);
+//        Router router = new Router(snake, board);
+//        Router router = reg.newCore(Router.class, snake, board);
 //
 //        JFrame ex = new SnakeGame(board, snake, router);
 //        ex.setVisible(true);
+        Compartment comp = reg.newCompartment(Compartment.class);
 
         EventQueue.invokeLater(() -> {
-            JFrame ex = new SnakeGame(board, snake, router);
+            comp.activate();
+            Board board = reg.newCore(Board.class, SnakeGame.ROW_COUNT, SnakeGame.COL_COUNT);
+            Snake snake = new Snake(board, 5, 6);
+            Router router = reg.newCore(Router.class, snake, board);
+            JFrame ex = new SnakeGame(comp, board, snake, router);
             ex.setVisible(true);
         });
-
+//
+        comp.activate();
         //Test binding and dump
-//        Compartment comp = new Compartment();
-//        comp.activate();
-//
-//        Thread watchService = new WatchService();
-//        watchService.start();
-//
-//        do{
-//            System.out.println(":::: Console command :::: ");
-//            Scanner keyboard = new Scanner(System.in);
-//            String key = keyboard.nextLine();
-//            if(key.equalsIgnoreCase("dumpRelation")){
-//                DumpHelper.dumpRelation();
-//            }else if(key.equalsIgnoreCase("dumpCore")){
-//                DumpHelper.dumpCoreObjects();
-//            }else if(key.equalsIgnoreCase("dumpCompartment")) {
-//                DumpHelper.dumpCompartments();
-//            }else if(key.equalsIgnoreCase("dumpRole")){
-//                DumpHelper.dumpRoles();
-//            }else {
-//                System.out.println("Invalid command. Try: dumpCore, dumpCompartment, dumpRelation");
-//            }
-//        }while(true);
+
+        Thread watchService = new WatchService(comp);
+        watchService.start();
+
+        do{
+            System.out.println(":::: Console command :::: ");
+            Scanner keyboard = new Scanner(System.in);
+            String key = keyboard.nextLine();
+            if(key.equalsIgnoreCase("dumpRelation")){
+                DumpHelper.dumpRelations(comp);
+            }else if(key.equalsIgnoreCase("dumpCore")){
+                DumpHelper.dumpCores();
+            }else if(key.equalsIgnoreCase("dumpCompartment")) {
+                DumpHelper.dumpCompartments();
+            }else if(key.equalsIgnoreCase("dumpLifting")){
+                DumpHelper.dumpLifting(comp);
+            }else {
+                System.out.println("Invalid command. Try: dumpCore, dumpCompartment, dumpRelation");
+            }
+        }while(true);
     }
 
-//    static class WatchService extends Thread{
-//        public void run(){
-//            try {
-//                String dir = System.getProperty("user.dir");
-//                Path p = Paths.get(dir + "/src/test/java/net/runtime/role/snake");
-//                FileWatcher fileWatcher = FileWatcher.getInstance();
-//                fileWatcher.register(p);
-//                fileWatcher.monitor("evolution.xml");
-//                fileWatcher.processEvents();
-//            }catch (IOException e){
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    static class WatchService extends Thread{
+        Compartment compartment;
+        public WatchService(Compartment compartment){
+            this.compartment = compartment;
+        }
+        public void run(){
+            compartment.activate();
+            try {
+                String dir = System.getProperty("user.dir");
+                Path p = Paths.get(dir + "/lyrt-usecase/src/main/java/net/lyrt/snake");
+                FileWatcher fileWatcher = FileWatcher.getInstance();
+                fileWatcher.register(p);
+                fileWatcher.monitor("adaptation.xml");
+                fileWatcher.processEvents();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
 }

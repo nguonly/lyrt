@@ -17,13 +17,18 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class UnanticipatedUnbindingBenchmark {
+    @Param({"0", "1", "2", "3", "4"})
+    private int ARGS;
+
+    private static int[] params = new int[]{10, 100, 1000, 5000, 10000};
+
     @State(Scope.Thread)
     public static class MyState{
         public Compartment[] compartments;
         public CoreObject[][] coreObjects;
         public String[] adaptationXML;
 
-        int NUM = 4;//10, 100, 1000, 10000
+        int NUM = params.length;//10, 100, 1000, 10000
 
         Registry reg = Registry.getRegistry();
         @Setup(Level.Invocation)
@@ -35,7 +40,8 @@ public class UnanticipatedUnbindingBenchmark {
 
             for(int i=0; i<NUM; i++){
                 compartments[i] = reg.newCompartment(Compartment.class);
-                int amount = (int)Math.pow(10, i+1);
+//                int amount = (int)Math.pow(10, i+1);
+                int amount = params[i];
                 coreObjects[i] = new CoreObject[amount];
 
                 BindingBenchmark.makeBinding(compartments[i], coreObjects[i], amount);
@@ -70,26 +76,32 @@ public class UnanticipatedUnbindingBenchmark {
     }
 
     @Benchmark
-    public void unanticipatedUnbinding10(MyState s){
-        s.compartments[0].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[0]);
+    public void unanticipatedUnbinding(MyState s){
+        s.compartments[ARGS].activate();
+        UnanticipatedXMLParser.parse(s.adaptationXML[ARGS]);
     }
 
-    @Benchmark
-    public void unanticipatedUnbinding100(MyState s){
-        s.compartments[1].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[1]);
-    }
-
-    @Benchmark
-    public void unanticipatedUnbinding1000(MyState s){
-        s.compartments[2].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[2]);
-    }
-
-    @Benchmark
-    public void unanticipatedUnbinding10000(MyState s){
-        s.compartments[3].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[3]);
-    }
+//    @Benchmark
+//    public void unanticipatedUnbinding10(MyState s){
+//        s.compartments[0].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[0]);
+//    }
+//
+//    @Benchmark
+//    public void unanticipatedUnbinding100(MyState s){
+//        s.compartments[1].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[1]);
+//    }
+//
+//    @Benchmark
+//    public void unanticipatedUnbinding1000(MyState s){
+//        s.compartments[2].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[2]);
+//    }
+//
+//    @Benchmark
+//    public void unanticipatedUnbinding10000(MyState s){
+//        s.compartments[3].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[3]);
+//    }
 }

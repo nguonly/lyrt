@@ -2,6 +2,7 @@ package binding;
 
 import binding.specimen.CoreObject;
 import binding.specimen.R1;
+import binding.specimen.R2;
 import net.lyrt.Compartment;
 import net.lyrt.Registry;
 import net.lyrt.unanticipation.UnanticipatedXMLParser;
@@ -17,6 +18,12 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class UnanticipatedTransferBenchmark {
+
+    @Param({"0", "1", "2", "3", "4"})
+    private int ARGS;
+
+    private static int[] params = new int[]{10, 100, 1000, 5000, 10000};
+
     @State(Scope.Thread)
     public static class MyState{
         public Compartment[] compartments;
@@ -24,7 +31,7 @@ public class UnanticipatedTransferBenchmark {
         public CoreObject[][] toCoreObjects;
         public String[] adaptationXML;
 
-        int NUM = 4;//10, 100, 1000, 10000
+        int NUM = params.length;//10, 100, 1000, 10000
 
         Registry reg = Registry.getRegistry();
         @Setup(Level.Invocation)
@@ -37,7 +44,8 @@ public class UnanticipatedTransferBenchmark {
 
             for(int i=0; i<NUM; i++){
                 compartments[i] = reg.newCompartment(Compartment.class);
-                int amount = (int)Math.pow(10, i+1);
+//                int amount = (int)Math.pow(10, i+1);
+                int amount = params[i];
                 fromCoreObjects[i] = new CoreObject[amount];
 
                 BindingBenchmark.makeBinding(compartments[i], fromCoreObjects[i], amount);
@@ -46,6 +54,9 @@ public class UnanticipatedTransferBenchmark {
                 for (int j = 0; j < amount; j++) {
                     toCoreObjects[i][j] = reg.newCore(CoreObject.class);
                 }
+
+                //Init binding
+                BindingBenchmark.makeBinding(compartments[i], toCoreObjects[i], amount, R2.class);
 
                 adaptationXML[i] = getXMLTransferOperation(compartments[i].hashCode(), fromCoreObjects[i], toCoreObjects[i], R1.class.getTypeName());
             }
@@ -75,26 +86,32 @@ public class UnanticipatedTransferBenchmark {
     }
 
     @Benchmark
-    public void unanticipatedTransfer10(MyState s){
-        s.compartments[0].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[0]);
+    public void unanticipatedTransfer(MyState s){
+        s.compartments[ARGS].activate();
+        UnanticipatedXMLParser.parse(s.adaptationXML[ARGS]);
     }
 
-    @Benchmark
-    public void unanticipatedTransfer100(MyState s){
-        s.compartments[1].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[1]);
-    }
-
-    @Benchmark
-    public void unanticipatedTransfer1000(MyState s){
-        s.compartments[2].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[2]);
-    }
-
-    @Benchmark
-    public void unanticipatedTransfer10000(MyState s){
-        s.compartments[3].activate();
-        UnanticipatedXMLParser.parse(s.adaptationXML[3]);
-    }
+//    @Benchmark
+//    public void unanticipatedTransfer10(MyState s){
+//        s.compartments[0].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[0]);
+//    }
+//
+//    @Benchmark
+//    public void unanticipatedTransfer100(MyState s){
+//        s.compartments[1].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[1]);
+//    }
+//
+//    @Benchmark
+//    public void unanticipatedTransfer1000(MyState s){
+//        s.compartments[2].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[2]);
+//    }
+//
+//    @Benchmark
+//    public void unanticipatedTransfer10000(MyState s){
+//        s.compartments[3].activate();
+//        UnanticipatedXMLParser.parse(s.adaptationXML[3]);
+//    }
 }

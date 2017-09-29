@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by nguonly on 5/12/17.
  */
-public class Compartment extends Player {
+public class Compartment implements IPlayer {
     private ArrayDeque<Relation> _relations = new ArrayDeque<>();
 
     public ConcurrentHashMap<Integer, CallableMethod> compartmentCallable = new ConcurrentHashMap<>();
@@ -85,10 +85,15 @@ public class Compartment extends Player {
     }
 
     public <T> T invoke(String method, Class<T> retType, Object... args){
+        Compartment compartment = _reg.getActiveCompartment();
 
         MethodSig ms = getMethodSig(retType, method, args);
         String m = String.format("%d:%s", this.hashCode(), ms.toString());
-        return _reg.invoke(this.compartmentCallable, retType, m, args);
+
+        if(compartment==null || compartment.equals(this))
+            return _reg.invoke(this.compartmentCallable, null, retType, m, args);
+        else
+            return _reg.invoke(compartment.liftingCallable, this.compartmentCallable, retType, m, args);
     }
 
     public void invoke(String method, Object... args){
@@ -129,6 +134,6 @@ public class Compartment extends Player {
         //String m = String.format("%d:%d:%s", this.hashCode(), obj.hashCode(), getMethodKey(method, retType, args));
         String m = String.format("%d:%s", obj.hashCode(), getMethodSig(retType, method, args).toString());
 
-        return _reg.invoke(loweringCallable, retType, m, args);
+        return _reg.invoke(loweringCallable, null, retType, m, args);
     }
 }

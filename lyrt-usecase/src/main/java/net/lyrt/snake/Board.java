@@ -1,15 +1,17 @@
 package net.lyrt.snake;
 
+import net.lyrt.Player;
+
 /**
  * Created by nguonly on 6/25/17.
  */
-public class Board {
+public class Board extends Player {
     final int ROW_COUNT, COL_COUNT;
     Cell[][] cells;
 
     Cell foodCell;
 
-    public Board(int rowCount, int columnCount) {
+    public Board(Integer rowCount, Integer columnCount) {
         ROW_COUNT = rowCount;
         COL_COUNT = columnCount;
 

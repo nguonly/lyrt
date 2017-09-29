@@ -2,6 +2,7 @@ package binding;
 
 import binding.specimen.CoreObject;
 import binding.specimen.R1;
+import binding.specimen.R2;
 import net.lyrt.Compartment;
 import net.lyrt.Registry;
 import org.openjdk.jmh.annotations.*;
@@ -16,6 +17,10 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class TransferBenchmark {
 
+    @Param({"0", "1", "2", "3", "4"})
+    public int ARGS;
+    private static int params[] = new int[]{10, 100, 1000, 5000, 10000};
+
     @State(Scope.Thread)
     public static class MyState {
         public Compartment[] compartments;
@@ -26,7 +31,7 @@ public class TransferBenchmark {
 
         @Setup(Level.Invocation)
         public void setup() {
-            int NUM = 4;
+            int NUM = params.length;
 
             compartments = new Compartment[NUM];
             fromCoreObjects = new CoreObject[NUM][];
@@ -34,7 +39,8 @@ public class TransferBenchmark {
 
             for (int i = 0; i < NUM; i++) {
                 compartments[i] = reg.newCompartment(Compartment.class);
-                int amount = (int) Math.pow(10, i + 1);
+//                int amount = (int) Math.pow(10, i + 1);
+                int amount = params[i];
                 fromCoreObjects[i] = new CoreObject[amount];
 
                 BindingBenchmark.makeBinding(compartments[i], fromCoreObjects[i], amount);
@@ -44,6 +50,8 @@ public class TransferBenchmark {
                 for (int j = 0; j < amount; j++) {
                     toCoreObjects[i][j] = reg.newCore(CoreObject.class);
                 }
+
+
             }
         }
     }
@@ -57,22 +65,27 @@ public class TransferBenchmark {
     }
 
     @Benchmark
-    public void transfer10(MyState s){
-        transfer(s.compartments[0], s.fromCoreObjects[0], s.toCoreObjects[0]);
+    public void transfer(MyState s){
+        transfer(s.compartments[ARGS], s.fromCoreObjects[ARGS], s.toCoreObjects[ARGS]);
     }
 
-    @Benchmark
-    public void transfer100(MyState s){
-        transfer(s.compartments[1], s.fromCoreObjects[1], s.toCoreObjects[1]);
-    }
-
-    @Benchmark
-    public void transfer1000(MyState s){
-        transfer(s.compartments[2], s.fromCoreObjects[2], s.toCoreObjects[2]);
-    }
-
-    @Benchmark
-    public void transfer10000(MyState s){
-        transfer(s.compartments[3], s.fromCoreObjects[3], s.toCoreObjects[3]);
-    }
+//    @Benchmark
+//    public void transfer10(MyState s){
+//        transfer(s.compartments[0], s.fromCoreObjects[0], s.toCoreObjects[0]);
+//    }
+//
+//    @Benchmark
+//    public void transfer100(MyState s){
+//        transfer(s.compartments[1], s.fromCoreObjects[1], s.toCoreObjects[1]);
+//    }
+//
+//    @Benchmark
+//    public void transfer1000(MyState s){
+//        transfer(s.compartments[2], s.fromCoreObjects[2], s.toCoreObjects[2]);
+//    }
+//
+//    @Benchmark
+//    public void transfer10000(MyState s){
+//        transfer(s.compartments[3], s.fromCoreObjects[3], s.toCoreObjects[3]);
+//    }
 }

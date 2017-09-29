@@ -3,6 +3,7 @@ package net.lyrt.unanticipation;
 import net.lyrt.Compartment;
 import net.lyrt.Registry;
 import net.lyrt.RelationEnum;
+import net.lyrt.helper.BoxingHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -13,17 +14,25 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 
 /**
  * Created by nguonly on 6/23/17.
  */
 public class UnanticipatedXMLParser {
-    public static void parse(String xml){
+    public static void parseFile(String filePath){
+        File inputFile = new File(filePath);
         try {
-//            File inputFile = new File(xmlPath);
-            InputSource is = new InputSource(new StringReader(xml));
+            Reader reader = new InputStreamReader(new FileInputStream(inputFile));
+            parse(reader);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void parse(Reader reader) {
+        try {
+            InputSource is = new InputSource(reader);
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -36,17 +45,17 @@ public class UnanticipatedXMLParser {
             // compartment tag
             ////////////////////////
             NodeList nodeList = doc.getElementsByTagName("compartment");
-            for(int i=0; i<nodeList.getLength(); i++){
+            for (int i = 0; i < nodeList.getLength(); i++) {
                 //component tag
                 Node node = nodeList.item(i);
-                if(node.getNodeType() == Node.ELEMENT_NODE){
-                    Element element = (Element)node;
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
                     String sCompId = element.getAttribute("id");
-                    int compartmentId = sCompId.isEmpty()?0:Integer.parseInt(sCompId);
+                    int compartmentId = sCompId.isEmpty() ? 0 : Integer.parseInt(sCompId);
 
                     //Create compartment if it doesn't have one
                     Compartment compartment;
-                    if(compartmentId<=0){
+                    if (compartmentId <= 0) {
                         //compartment = Compartment.initialize(Compartment.class);
                         compartment = registry.newCompartment(Compartment.class);
                         compartment.activate();
@@ -63,11 +72,14 @@ public class UnanticipatedXMLParser {
 
                 }
             }
-        }catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-        }catch(Throwable e){
+        } catch (Throwable e) {
             e.printStackTrace();
         }
+    }
+
+    public static void parse(String xml){
+        Reader reader = new StringReader(xml);
+        parse(reader);
     }
 
     private static void processBind(Element element, int compartmentId) throws Throwable{
@@ -95,6 +107,11 @@ public class UnanticipatedXMLParser {
             if(!strRoleId.isEmpty()){
                 registry.bind(RelationEnum.DEEP_PLAY, compartmentId, bindRoleId, roleClass);
             }
+
+            ///////////////////
+            //invoke tag
+            ///////////////////
+            processInvocation(bindElement, compartmentId, bindCoreId, bindRoleId);
         }
     }
 
@@ -138,28 +155,60 @@ public class UnanticipatedXMLParser {
                 for(int iParam=0; iParam<paramNodes.getLength(); iParam++){
                     Node paramNode = paramNodes.item(iParam);
                     Element paramNodeElement = (Element)paramNode;
-//                                paramClasses[iParam] = ClassHelper.forName(paramNodeElement.getAttribute("type"));
-//                                paramValues[iParam] = StringValueConverter.convert(paramNodeElement.getAttribute("value"), paramClasses[iParam]);
+                    paramClasses[iParam] = Class.forName(paramNodeElement.getAttribute("type"));
+                    paramValues[iParam] = StringValueConverter.convert(paramNodeElement.getAttribute("value"), paramClasses[iParam]);
                 }
 
                 //Return type
-//                            Class returnType = ClassHelper.forName(invokeNodeElement.getAttribute("returnType"));
+                Class returnType = Class.forName(invokeNodeElement.getAttribute("returnType"));
                 //Prepare method definition to invoke
 //                            Object core = registry.getCoreObjectMap().get(coreId);
                 //core.invoke(method, paramClasses, paramValues);
 //                            registry.invokeRole(null, core, method, returnType, paramClasses, paramValues);
+                if(!strCoreId.isEmpty()) {
+                    registry.invoke(RelationEnum.PLAY, compartmentId, bindCoreId, method, returnType);
+                }
+                if(!strRoleId.isEmpty()){
+                    registry.invoke(RelationEnum.DEEP_PLAY, compartmentId, bindRoleId, method, returnType);
+                }
+            }
+        }
+    }
+
+    private static void processInvocation(Element bindElement, int compartmentId, int bindCoreId, int bindRoleId) throws ClassNotFoundException {
+        NodeList invokeNodes = bindElement.getElementsByTagName("invoke");
+        //System.out.println("::: invoke :::: " + invokeNodes.getLength());
+        for(int iInvoke=0; iInvoke<invokeNodes.getLength(); iInvoke++){
+            Node invokeNode = invokeNodes.item(iInvoke);
+            Element invokeNodeElement = (Element)invokeNode;
+            String method = invokeNodeElement.getAttribute("method");
+            System.out.println(" >>> invoke " + method);
+
+            //param nodes
+            NodeList paramNodes = invokeNodeElement.getElementsByTagName("param");
+            Object[] paramValues = new Object[paramNodes.getLength()];
+            Class[] paramClasses = new Class[paramNodes.getLength()];
+            for(int iParam=0; iParam<paramNodes.getLength(); iParam++){
+                Node paramNode = paramNodes.item(iParam);
+                Element paramNodeElement = (Element)paramNode;
+                paramClasses[iParam] = Class.forName(paramNodeElement.getAttribute("type"));
+                paramValues[iParam] = StringValueConverter.convert(paramNodeElement.getAttribute("value"), paramClasses[iParam]);
             }
 
-            //Register to watch service for bytecode change
-//                        if(reload){
-//                            String dir = System.getProperty("user.dir");
-//                            String roleFileName = roleClass.substring(roleClass.lastIndexOf('.')+1) + ".class";
-//                            String rolePath = roleClass.substring(0, roleClass.lastIndexOf('.'));
-//                            Path p = Paths.get(dir + "/target/test-classes/" + rolePath.replaceAll("\\.", File.separator));
-//                            FileWatcher fileWatcher = FileWatcher.getInstance();
-//                            fileWatcher.register(p);
-//                            fileWatcher.monitor(roleFileName);
-//                        }
+            //Return type
+            Class returnType = BoxingHelper.descriptorPrimitive.get(invokeNodeElement.getAttribute("returnType"));
+//            System.out.println(returnType);
+            //Prepare method definition to invoke
+//                            Object core = registry.getCoreObjectMap().get(coreId);
+            //core.invoke(method, paramClasses, paramValues);
+//                            registry.invokeRole(null, core, method, returnType, paramClasses, paramValues);
+            Registry registry = Registry.getRegistry();
+            if(bindCoreId!=0) {
+                registry.invoke(RelationEnum.PLAY, compartmentId, bindCoreId, method, returnType);
+            }
+            if(bindRoleId!=0){
+                registry.invoke(RelationEnum.DEEP_PLAY, compartmentId, bindRoleId, method, returnType);
+            }
         }
     }
 

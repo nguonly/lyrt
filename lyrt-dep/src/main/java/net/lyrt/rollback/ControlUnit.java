@@ -23,11 +23,14 @@ public class ControlUnit {
         ArrayDeque<Relation> conf = copyRelations(compartment);
 
         //2. push the copied relation to the stack
-        HashMap<Long, Stack<ArrayDeque<Relation>>> hash = reg.getRollbackStacks();
-        Stack<ArrayDeque<Relation>> stack = hash.get(threadId);
+        HashMap<Integer, Stack<ArrayDeque<Relation>>> hash = reg.getRollbackStacks();
+        //Stack<ArrayDeque<Relation>> stack = hash.get(threadId);
+        Stack<ArrayDeque<Relation>> stack = hash.get(compartment.hashCode());
         if(stack == null) stack = new Stack<>();
         stack.push(conf);
-        hash.put(threadId, stack);
+//        hash.put(threadId, stack);
+        hash.put(compartment.hashCode(), stack);
+//        System.out.println("Stack : " + conf);
     }
 
     public void checkpoint(){
@@ -80,9 +83,14 @@ public class ControlUnit {
     }
 
     public void rollback(Compartment activeCompartment){
-        Registry reg = Registry.getRegistry();
         long threadId = Thread.currentThread().getId();
-        Stack<ArrayDeque<Relation>> stack = reg.getRollbackStacks().get(threadId);
+        rollback(threadId, activeCompartment);
+    }
+
+    public void rollback(Long threadId, Compartment activeCompartment){
+        Registry reg = Registry.getRegistry();
+        //Stack<ArrayDeque<Relation>> stack = reg.getRollbackStacks().get(threadId);
+        Stack<ArrayDeque<Relation>> stack = reg.getRollbackStacks().get(activeCompartment.hashCode());
         if(stack == null) return;
 
         //restore previously saved application configuration
@@ -104,6 +112,10 @@ public class ControlUnit {
 //            System.out.println("Remove current relation in a compartment");
 //            DumpHelper.dumpRelations(compartment);
 
+            compartment.loweringCallable.clear();
+            compartment.liftingCallable.clear();
+            compartment.compartmentCallable.clear();
+
             relations.addAll(shadowRelation);
 
             //Find cores to readjust callable
@@ -111,16 +123,17 @@ public class ControlUnit {
                     .collect(Collectors.groupingBy(Relation::getCore, Collectors.counting()));
 
             cores.forEach((k, v) -> reg.reRegisterCallable(compartment, k));
+        }else{
+            //in case of no binding
+            activeCompartment.getRelations().clear();
+            activeCompartment.liftingCallable.clear();
+            activeCompartment.loweringCallable.clear();
         }
     }
 
     public ArrayDeque<Relation> copyRelations(Compartment compartment){
         Registry reg = Registry.getRegistry();
         Kryo kryo = reg.kryos.get();
-
-        //First attempt to serialize object with zero args constructor. If not available,
-        //StdInstantiatorStrategy is used as a fallback to serial object without zero args constructor.
-        kryo.setInstantiatorStrategy(new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
 
         ArrayDeque<Relation> relations = compartment.getRelations();
         ArrayDeque<Relation> cloneRelations = new ArrayDeque<>();
@@ -131,20 +144,32 @@ public class ControlUnit {
             cloneRelations.add(r);
         });
 
-        boolean isDeepCopy = reg.isDeepCopy();
+        List<Relation> deepRoleRelations = cloneRelations.stream()
+                .filter(p -> !p.player.equals(p.core))
+                .collect(Collectors.toList());
 
         //2. iterate over the clone relations to perform copy on roles and its players
         cloneRelations.forEach(k -> {
 //            if(k.role instanceof Role){
                 //3. deep copy role
-                Object role = isDeepCopy?kryo.copy(k.role):kryo.copyShallow(k.role);
+//                Object role = isDeepCopy?kryo.copy(k.role):kryo.copyShallow(k.role);
+            Object role = kryo.copy(k.role);
 
-                //4. find player in relations and update
-                List<Relation> playerRelations = cloneRelations.stream()
-                        .filter(p -> p.compartment.equals(compartment) && p.core.equals(k.core)
-                        && p.player.equals(k.player)).collect(Collectors.toList());
+                //4. find players in relations and update. Expensive process
+//                List<Relation> playerRelations = cloneRelations.stream()
+//                        .filter(p -> p.core.equals(k.core)
+//                                && p.player.equals(k.role)).collect(Collectors.toList());
+//
+//                playerRelations.forEach(z -> z.player = role);
 
-                playerRelations.forEach(z -> z.player = role);
+                if(deepRoleRelations.size()>0){
+                    deepRoleRelations.forEach(z -> {
+                        if(z.player.equals(k.role)) {
+                            z.player = role;
+                        }
+                    });
+                }
+
 
                 //5. update role to a copy version
                 k.role = role;

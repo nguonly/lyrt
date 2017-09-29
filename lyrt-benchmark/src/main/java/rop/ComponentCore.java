@@ -11,8 +11,8 @@ public class ComponentCore implements Component {
 
     @Override
     public void addRole(ComponentRole spec) {
-        if(roles.containsKey(spec.hashCode())){
-
+        if(!roles.containsKey(spec.hashCode())){
+            roles.put(spec.hashCode(), spec);
         }
     }
 
@@ -25,4 +25,6 @@ public class ComponentCore implements Component {
     public boolean hasRole(String spec) {
         return false;
     }
+
+    public HashMap<Integer, ComponentRole> getRoles(){return roles;}
 }

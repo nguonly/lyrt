@@ -1,12 +1,10 @@
 package net.lyrt.helper;
 
-import net.lyrt.CallableMethod;
-import net.lyrt.Compartment;
-import net.lyrt.Player;
-import net.lyrt.Relation;
+import net.lyrt.*;
 
 import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -50,5 +48,30 @@ public class DumpHelper {
         ConcurrentHashMap<Integer, CallableMethod> callable = core.coreCallable;
         System.out.println("---------- Dump Core Callable -----------");
         callable.forEach((k, v) -> System.out.println(String.format("%d : %s", k, v.toString())));
+    }
+
+    public static void dumpCompartments(){
+        Registry reg = Registry.getRegistry();
+
+        reg.getActiveCompartments().forEach((k,v) -> {
+            System.out.println(k + " ::: " + v.hashCode() + " :: " + v.getClass());
+        });
+    }
+
+    public static void dumpCores(){
+        Registry reg = Registry.getRegistry();
+
+        reg.getCores().forEach(k -> {
+            System.out.println(k.hashCode() + " :: " + k.getClass());
+        });
+    }
+
+    public static void dumpStacks(Compartment compartment){
+        Registry reg = Registry.getRegistry();
+
+        Stack<ArrayDeque<Relation>> stack = reg.getRollbackStacks().get(compartment.hashCode());
+
+        //System.out.println("Stack size = " + stack.size());
+        stack.forEach(k -> System.out.println("Stack -> " + k.size()));
     }
 }

@@ -27,7 +27,7 @@ public class ControlUnitOnStateTest extends BaseTest {
 
         Role a;
         try(AdaptationBlock ac = new AdaptationBlock()){
-            a = person.bind(A.class, "myA");
+            a = (A)person.bind(A.class, "myA");
         }
 
         Assert.assertEquals("myA", person.invoke("getName", String.class));
