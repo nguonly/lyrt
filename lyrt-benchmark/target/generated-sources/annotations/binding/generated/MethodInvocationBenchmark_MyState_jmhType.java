@@ -1,4 +1,0 @@
-package binding.generated;
-public class MethodInvocationBenchmark_MyState_jmhType extends MethodInvocationBenchmark_MyState_jmhType_B3 {
-}
-

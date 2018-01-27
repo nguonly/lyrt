@@ -1,4 +1,0 @@
-package binding.generated;
-public class UnanticipatedAdaptationBenchmark_MyState_jmhType extends UnanticipatedAdaptationBenchmark_MyState_jmhType_B3 {
-}
-

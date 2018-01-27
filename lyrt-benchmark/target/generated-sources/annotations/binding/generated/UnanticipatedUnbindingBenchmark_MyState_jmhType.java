@@ -1,4 +1,0 @@
-package binding.generated;
-public class UnanticipatedUnbindingBenchmark_MyState_jmhType extends UnanticipatedUnbindingBenchmark_MyState_jmhType_B3 {
-}
-
