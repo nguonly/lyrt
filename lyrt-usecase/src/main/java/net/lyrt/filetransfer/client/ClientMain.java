@@ -48,9 +48,6 @@ public class ClientMain extends JFrame{
 
         add(panel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.NORTH);
-//        add(btnConnect, BorderLayout.WEST);
-//        add(btnDisconnect, BorderLayout.EAST);
-
 
         setTitle("Client: File Transfer App");
         setLocationRelativeTo(null);
@@ -67,9 +64,6 @@ public class ClientMain extends JFrame{
     public void send(){
         String commands = txtCommand.getText();
         service.sendCommand(commands);
-//        if(commands.contains(Command.GET)){
-//            service.sendRequest(commands);
-//        }
     }
 
     public void connect(){

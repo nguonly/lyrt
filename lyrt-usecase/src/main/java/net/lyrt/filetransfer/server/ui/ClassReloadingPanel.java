@@ -19,7 +19,6 @@ public class ClassReloadingPanel extends JPanel {
         rdoDisable.addActionListener(e -> Registry.getRegistry().isUnanticipated=false);
         rdoEnable.addActionListener(e -> {
             Registry reg = Registry.getRegistry();
-//            if(!reg.isByteBuddyAgentInstalled()) ByteBuddyAgent.install();
             reg.isUnanticipated=true;
         });
 

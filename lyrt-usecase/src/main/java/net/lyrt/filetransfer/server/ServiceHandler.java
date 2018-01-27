@@ -94,33 +94,15 @@ public class ServiceHandler extends Thread{
 
     public void processAdaptation(String operation){
         compartment.activate();
-//        channel.unbind(LZ.class);
-//        channel.unbind(AES.class);
         System.out.println("is unanticipated : " + Registry.getRegistry().isUnanticipated);
         try(AdaptationBlock ab = new AdaptationBlock()){
             if(operation.equals("AES")) channel.bind(AES.class);
             if(operation.equals("LZ")) channel.bind(LZ.class);
             if(operation.equals("LZ-AES")) channel.bind(LZ.class).bind(AES.class);
             if(operation.equals("AES-LZ")) channel.bind(AES.class).bind(LZ.class);
-//            switch (operation){
-//                case "AES":
-//                    channel.bind(AES.class);
-//                    break;
-//                case "LZ":
-//                    channel.bind(LZ.class);
-//                    break;
-//                case "LZ-AES":
-//                    channel.bind(LZ.class).bind(AES.class);
-//                    break;
-//                case "AES-LZ":
-//                    channel.bind(AES.class).bind(LZ.class);
-//                    break;
-//            }
         }
 
         System.out.println("In ProcessAdaptation Thread : " + Thread.currentThread().getId() + "  compartment : " + compartment.hashCode());
-//        DumpHelper.dumpRelations(compartment);
-//        DumpHelper.dumpStacks(compartment);
         System.out.println("-------------------------");
 
     }

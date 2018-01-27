@@ -26,9 +26,12 @@ import org.openjdk.jmh.results.ResultRole;
 import java.lang.reflect.Field;
 import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.IterationParams;
+import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.infra.Control;
+import org.openjdk.jmh.results.ScalarResult;
+import org.openjdk.jmh.results.AggregationPolicy;
+import org.openjdk.jmh.runner.FailureAssistException;
 
-import org.openjdk.jmh.infra.generated.Blackhole_jmhType;
-import org.openjdk.jmh.infra.generated.Blackhole_jmhType;
 import binding.generated.MethodInvocationBenchmark_jmhType;
 import binding.generated.MethodInvocationBenchmark_MyState_jmhType;
 public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
@@ -50,34 +53,45 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
     boolean p224, p225, p226, p227, p228, p229, p230, p231, p232, p233, p234, p235, p236, p237, p238, p239;
     boolean p240, p241, p242, p243, p244, p245, p246, p247, p248, p249, p250, p251, p252, p253, p254, p255;
     int startRndMask;
+    BenchmarkParams benchmarkParams;
+    IterationParams iterationParams;
+    ThreadParams threadParams;
+    Blackhole blackhole;
+    Control notifyControl;
 
     public BenchmarkTaskResult indyDirectInvocation_Throughput(InfraControl control, ThreadParams threadParams) throws Throwable {
+        this.benchmarkParams = control.benchmarkParams;
+        this.iterationParams = control.iterationParams;
+        this.threadParams    = threadParams;
+        this.notifyControl   = control.notifyControl;
+        if (this.blackhole == null) {
+            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
+        }
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
-            Blackhole_jmhType l_blackhole1_1 = _jmh_tryInit_f_blackhole1_1(control, threadParams);
-            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control, threadParams);
-            Blackhole_jmhType l_blackhole1_3 = _jmh_tryInit_f_blackhole1_3(control, threadParams);
-            MethodInvocationBenchmark_MyState_jmhType l_mystate2_2 = _jmh_tryInit_f_mystate2_2(control, threadParams);
+            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control);
+            MethodInvocationBenchmark_MyState_jmhType l_mystate1_1 = _jmh_tryInit_f_mystate1_1(control);
 
             control.preSetup();
-            l_blackhole1_1.clearSinks();
-            l_blackhole1_3.clearSinks();
+
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
-                l_mystate2_2.setUp();
-                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
-                l_mystate2_2.tearDown();
+                l_mystate1_1.setUp();
+                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
+                l_mystate1_1.tearDown();
                 res.allOps++;
             }
 
-            indyDirectInvocation_thrpt_jmhStub(control, res, l_mystate2_2, l_blackhole1_3, l_methodinvocationbenchmark0_0, l_blackhole1_1);
+            notifyControl.startMeasurement = true;
+            indyDirectInvocation_thrpt_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, l_mystate1_1, l_methodinvocationbenchmark0_0);
+            notifyControl.stopMeasurement = true;
             control.announceWarmdownReady();
             try {
                 while (control.warmdownShouldWait) {
-                    l_mystate2_2.setUp();
-                    l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
-                    l_mystate2_2.tearDown();
+                    l_mystate1_1.setUp();
+                    l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
+                    l_mystate1_1.tearDown();
                     res.allOps++;
                 }
                 control.preTearDown();
@@ -86,35 +100,34 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
             }
 
             if (control.isLastIteration()) {
-                f_mystate2_2 = null;
-                f_blackhole1_3 = null;
+                f_mystate1_1 = null;
                 f_methodinvocationbenchmark0_0 = null;
-                f_blackhole1_1 = null;
             }
             res.allOps += res.measuredOps;
-            int batchSize = control.iterationParams.getBatchSize();
-            int opsPerInv = control.benchmarkParams.getOpsPerInvocation();
+            int batchSize = iterationParams.getBatchSize();
+            int opsPerInv = benchmarkParams.getOpsPerInvocation();
             res.allOps *= opsPerInv;
             res.allOps /= batchSize;
             res.measuredOps *= opsPerInv;
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
-            results.add(new ThroughputResult(ResultRole.PRIMARY, "indyDirectInvocation", res.measuredOps, res.getTime(), control.benchmarkParams.getTimeUnit()));
+            results.add(new ThroughputResult(ResultRole.PRIMARY, "indyDirectInvocation", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
+            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
     }
 
-    public void indyDirectInvocation_thrpt_jmhStub(InfraControl control, RawResults result, MethodInvocationBenchmark_MyState_jmhType l_mystate2_2, Blackhole_jmhType l_blackhole1_3, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0, Blackhole_jmhType l_blackhole1_1) throws Throwable {
+    public static void indyDirectInvocation_thrpt_jmhStub(InfraControl control, RawResults result, BenchmarkParams benchmarkParams, IterationParams iterationParams, ThreadParams threadParams, Blackhole blackhole, Control notifyControl, int startRndMask, MethodInvocationBenchmark_MyState_jmhType l_mystate1_1, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0) throws Throwable {
         long operations = 0;
         long realTime = 0;
         result.startTime = System.nanoTime();
         do {
-            l_mystate2_2.setUp();
+            l_mystate1_1.setUp();
             long rt = System.nanoTime();
-            l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
+            l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
             realTime += (System.nanoTime() - rt);
-            l_mystate2_2.tearDown();
+            l_mystate1_1.tearDown();
             operations++;
         } while(!control.isDone);
         result.stopTime = System.nanoTime();
@@ -124,32 +137,38 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
 
 
     public BenchmarkTaskResult indyDirectInvocation_AverageTime(InfraControl control, ThreadParams threadParams) throws Throwable {
+        this.benchmarkParams = control.benchmarkParams;
+        this.iterationParams = control.iterationParams;
+        this.threadParams    = threadParams;
+        this.notifyControl   = control.notifyControl;
+        if (this.blackhole == null) {
+            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
+        }
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
-            Blackhole_jmhType l_blackhole1_1 = _jmh_tryInit_f_blackhole1_1(control, threadParams);
-            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control, threadParams);
-            Blackhole_jmhType l_blackhole1_3 = _jmh_tryInit_f_blackhole1_3(control, threadParams);
-            MethodInvocationBenchmark_MyState_jmhType l_mystate2_2 = _jmh_tryInit_f_mystate2_2(control, threadParams);
+            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control);
+            MethodInvocationBenchmark_MyState_jmhType l_mystate1_1 = _jmh_tryInit_f_mystate1_1(control);
 
             control.preSetup();
-            l_blackhole1_1.clearSinks();
-            l_blackhole1_3.clearSinks();
+
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
-                l_mystate2_2.setUp();
-                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
-                l_mystate2_2.tearDown();
+                l_mystate1_1.setUp();
+                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
+                l_mystate1_1.tearDown();
                 res.allOps++;
             }
 
-            indyDirectInvocation_avgt_jmhStub(control, res, l_mystate2_2, l_blackhole1_3, l_methodinvocationbenchmark0_0, l_blackhole1_1);
+            notifyControl.startMeasurement = true;
+            indyDirectInvocation_avgt_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, l_mystate1_1, l_methodinvocationbenchmark0_0);
+            notifyControl.stopMeasurement = true;
             control.announceWarmdownReady();
             try {
                 while (control.warmdownShouldWait) {
-                    l_mystate2_2.setUp();
-                    l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
-                    l_mystate2_2.tearDown();
+                    l_mystate1_1.setUp();
+                    l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
+                    l_mystate1_1.tearDown();
                     res.allOps++;
                 }
                 control.preTearDown();
@@ -158,35 +177,34 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
             }
 
             if (control.isLastIteration()) {
-                f_mystate2_2 = null;
-                f_blackhole1_3 = null;
+                f_mystate1_1 = null;
                 f_methodinvocationbenchmark0_0 = null;
-                f_blackhole1_1 = null;
             }
             res.allOps += res.measuredOps;
-            int batchSize = control.iterationParams.getBatchSize();
-            int opsPerInv = control.benchmarkParams.getOpsPerInvocation();
+            int batchSize = iterationParams.getBatchSize();
+            int opsPerInv = benchmarkParams.getOpsPerInvocation();
             res.allOps *= opsPerInv;
             res.allOps /= batchSize;
             res.measuredOps *= opsPerInv;
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
-            results.add(new AverageTimeResult(ResultRole.PRIMARY, "indyDirectInvocation", res.measuredOps, res.getTime(), control.benchmarkParams.getTimeUnit()));
+            results.add(new AverageTimeResult(ResultRole.PRIMARY, "indyDirectInvocation", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
+            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
     }
 
-    public void indyDirectInvocation_avgt_jmhStub(InfraControl control, RawResults result, MethodInvocationBenchmark_MyState_jmhType l_mystate2_2, Blackhole_jmhType l_blackhole1_3, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0, Blackhole_jmhType l_blackhole1_1) throws Throwable {
+    public static void indyDirectInvocation_avgt_jmhStub(InfraControl control, RawResults result, BenchmarkParams benchmarkParams, IterationParams iterationParams, ThreadParams threadParams, Blackhole blackhole, Control notifyControl, int startRndMask, MethodInvocationBenchmark_MyState_jmhType l_mystate1_1, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0) throws Throwable {
         long operations = 0;
         long realTime = 0;
         result.startTime = System.nanoTime();
         do {
-            l_mystate2_2.setUp();
+            l_mystate1_1.setUp();
             long rt = System.nanoTime();
-            l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
+            l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
             realTime += (System.nanoTime() - rt);
-            l_mystate2_2.tearDown();
+            l_mystate1_1.tearDown();
             operations++;
         } while(!control.isDone);
         result.stopTime = System.nanoTime();
@@ -196,36 +214,42 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
 
 
     public BenchmarkTaskResult indyDirectInvocation_SampleTime(InfraControl control, ThreadParams threadParams) throws Throwable {
+        this.benchmarkParams = control.benchmarkParams;
+        this.iterationParams = control.iterationParams;
+        this.threadParams    = threadParams;
+        this.notifyControl   = control.notifyControl;
+        if (this.blackhole == null) {
+            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
+        }
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
-            Blackhole_jmhType l_blackhole1_1 = _jmh_tryInit_f_blackhole1_1(control, threadParams);
-            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control, threadParams);
-            Blackhole_jmhType l_blackhole1_3 = _jmh_tryInit_f_blackhole1_3(control, threadParams);
-            MethodInvocationBenchmark_MyState_jmhType l_mystate2_2 = _jmh_tryInit_f_mystate2_2(control, threadParams);
+            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control);
+            MethodInvocationBenchmark_MyState_jmhType l_mystate1_1 = _jmh_tryInit_f_mystate1_1(control);
 
             control.preSetup();
-            l_blackhole1_1.clearSinks();
-            l_blackhole1_3.clearSinks();
+
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
-                l_mystate2_2.setUp();
-                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
-                l_mystate2_2.tearDown();
+                l_mystate1_1.setUp();
+                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
+                l_mystate1_1.tearDown();
                 res.allOps++;
             }
 
+            notifyControl.startMeasurement = true;
             int targetSamples = (int) (control.getDuration(TimeUnit.MILLISECONDS) * 20); // at max, 20 timestamps per millisecond
-            int batchSize = control.iterationParams.getBatchSize();
-            int opsPerInv = control.benchmarkParams.getOpsPerInvocation();
+            int batchSize = iterationParams.getBatchSize();
+            int opsPerInv = benchmarkParams.getOpsPerInvocation();
             SampleBuffer buffer = new SampleBuffer();
-            indyDirectInvocation_sample_jmhStub(control, res, buffer, targetSamples, opsPerInv, batchSize, l_mystate2_2, l_blackhole1_3, l_methodinvocationbenchmark0_0, l_blackhole1_1);
+            indyDirectInvocation_sample_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, buffer, targetSamples, opsPerInv, batchSize, l_mystate1_1, l_methodinvocationbenchmark0_0);
+            notifyControl.stopMeasurement = true;
             control.announceWarmdownReady();
             try {
                 while (control.warmdownShouldWait) {
-                    l_mystate2_2.setUp();
-                    l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
-                    l_mystate2_2.tearDown();
+                    l_mystate1_1.setUp();
+                    l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
+                    l_mystate1_1.tearDown();
                     res.allOps++;
                 }
                 control.preTearDown();
@@ -234,23 +258,22 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
             }
 
             if (control.isLastIteration()) {
-                f_mystate2_2 = null;
-                f_blackhole1_3 = null;
+                f_mystate1_1 = null;
                 f_methodinvocationbenchmark0_0 = null;
-                f_blackhole1_1 = null;
             }
             res.allOps += res.measuredOps * batchSize;
             res.allOps *= opsPerInv;
             res.allOps /= batchSize;
             res.measuredOps *= opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
-            results.add(new SampleTimeResult(ResultRole.PRIMARY, "indyDirectInvocation", buffer, control.benchmarkParams.getTimeUnit()));
+            results.add(new SampleTimeResult(ResultRole.PRIMARY, "indyDirectInvocation", buffer, benchmarkParams.getTimeUnit()));
+            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
     }
 
-    public void indyDirectInvocation_sample_jmhStub(InfraControl control, RawResults result, SampleBuffer buffer, int targetSamples, long opsPerInv, int batchSize, MethodInvocationBenchmark_MyState_jmhType l_mystate2_2, Blackhole_jmhType l_blackhole1_3, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0, Blackhole_jmhType l_blackhole1_1) throws Throwable {
+    public static void indyDirectInvocation_sample_jmhStub(InfraControl control, RawResults result, BenchmarkParams benchmarkParams, IterationParams iterationParams, ThreadParams threadParams, Blackhole blackhole, Control notifyControl, int startRndMask, SampleBuffer buffer, int targetSamples, long opsPerInv, int batchSize, MethodInvocationBenchmark_MyState_jmhType l_mystate1_1, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0) throws Throwable {
         long realTime = 0;
         long operations = 0;
         int rnd = (int)System.nanoTime();
@@ -258,7 +281,7 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
         long time = 0;
         int currentStride = 0;
         do {
-            l_mystate2_2.setUp();
+            l_mystate1_1.setUp();
             long rt = System.nanoTime();
             rnd = (rnd * 1664525 + 1013904223);
             boolean sample = (rnd & rndMask) == 0;
@@ -267,7 +290,7 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
             }
             for (int b = 0; b < batchSize; b++) {
                 if (control.volatileSpoiler) return;
-                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
+                l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
             }
             if (sample) {
                 buffer.add((System.nanoTime() - time) / opsPerInv);
@@ -278,7 +301,7 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
                 }
             }
             realTime += (System.nanoTime() - rt);
-            l_mystate2_2.tearDown();
+            l_mystate1_1.tearDown();
             operations++;
         } while(!control.isDone);
         startRndMask = Math.max(startRndMask, rndMask);
@@ -288,77 +311,60 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
 
 
     public BenchmarkTaskResult indyDirectInvocation_SingleShotTime(InfraControl control, ThreadParams threadParams) throws Throwable {
+        this.benchmarkParams = control.benchmarkParams;
+        this.iterationParams = control.iterationParams;
+        this.threadParams    = threadParams;
+        this.notifyControl   = control.notifyControl;
+        if (this.blackhole == null) {
+            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
+        }
         if (threadParams.getSubgroupIndex() == 0) {
-            Blackhole_jmhType l_blackhole1_1 = _jmh_tryInit_f_blackhole1_1(control, threadParams);
-            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control, threadParams);
-            Blackhole_jmhType l_blackhole1_3 = _jmh_tryInit_f_blackhole1_3(control, threadParams);
-            MethodInvocationBenchmark_MyState_jmhType l_mystate2_2 = _jmh_tryInit_f_mystate2_2(control, threadParams);
+            MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0 = _jmh_tryInit_f_methodinvocationbenchmark0_0(control);
+            MethodInvocationBenchmark_MyState_jmhType l_mystate1_1 = _jmh_tryInit_f_mystate1_1(control);
 
             control.preSetup();
-            l_blackhole1_1.clearSinks();
-            l_blackhole1_3.clearSinks();
 
+
+            notifyControl.startMeasurement = true;
             RawResults res = new RawResults();
-            int batchSize = control.iterationParams.getBatchSize();
-            indyDirectInvocation_ss_jmhStub(control, batchSize, res, l_mystate2_2, l_blackhole1_3, l_methodinvocationbenchmark0_0, l_blackhole1_1);
+            int batchSize = iterationParams.getBatchSize();
+            indyDirectInvocation_ss_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, batchSize, l_mystate1_1, l_methodinvocationbenchmark0_0);
             control.preTearDown();
 
             if (control.isLastIteration()) {
-                f_mystate2_2 = null;
-                f_blackhole1_3 = null;
+                f_mystate1_1 = null;
                 f_methodinvocationbenchmark0_0 = null;
-                f_blackhole1_1 = null;
             }
             int opsPerInv = control.benchmarkParams.getOpsPerInvocation();
             long totalOps = opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(totalOps, totalOps);
-            results.add(new SingleShotResult(ResultRole.PRIMARY, "indyDirectInvocation", res.getTime(), control.benchmarkParams.getTimeUnit()));
+            results.add(new SingleShotResult(ResultRole.PRIMARY, "indyDirectInvocation", res.getTime(), benchmarkParams.getTimeUnit()));
+            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
     }
 
-    public void indyDirectInvocation_ss_jmhStub(InfraControl control, int batchSize, RawResults result, MethodInvocationBenchmark_MyState_jmhType l_mystate2_2, Blackhole_jmhType l_blackhole1_3, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0, Blackhole_jmhType l_blackhole1_1) throws Throwable {
+    public static void indyDirectInvocation_ss_jmhStub(InfraControl control, RawResults result, BenchmarkParams benchmarkParams, IterationParams iterationParams, ThreadParams threadParams, Blackhole blackhole, Control notifyControl, int startRndMask, int batchSize, MethodInvocationBenchmark_MyState_jmhType l_mystate1_1, MethodInvocationBenchmark_jmhType l_methodinvocationbenchmark0_0) throws Throwable {
         long realTime = 0;
         result.startTime = System.nanoTime();
         for (int b = 0; b < batchSize; b++) {
             if (control.volatileSpoiler) return;
-            l_mystate2_2.setUp();
+            l_mystate1_1.setUp();
             long rt = System.nanoTime();
-            l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate2_2, l_blackhole1_3);
+            l_methodinvocationbenchmark0_0.indyDirectInvocation(l_mystate1_1, blackhole);
             realTime += (System.nanoTime() - rt);
-            l_mystate2_2.tearDown();
+            l_mystate1_1.tearDown();
         }
         result.stopTime = System.nanoTime();
         result.realTime = realTime;
     }
 
     
-    Blackhole_jmhType f_blackhole1_1;
-    
-    Blackhole_jmhType _jmh_tryInit_f_blackhole1_1(InfraControl control, ThreadParams threadParams) throws Throwable {
-        Blackhole_jmhType val = f_blackhole1_1;
-        if (val == null) {
-            val = new Blackhole_jmhType();
-            f_blackhole1_1 = val;
-        }
-        return val;
-    }
-    
-    Blackhole_jmhType f_blackhole1_3;
-    
-    Blackhole_jmhType _jmh_tryInit_f_blackhole1_3(InfraControl control, ThreadParams threadParams) throws Throwable {
-        Blackhole_jmhType val = f_blackhole1_3;
-        if (val == null) {
-            val = new Blackhole_jmhType();
-            f_blackhole1_3 = val;
-        }
-        return val;
-    }
-    
     MethodInvocationBenchmark_jmhType f_methodinvocationbenchmark0_0;
     
-    MethodInvocationBenchmark_jmhType _jmh_tryInit_f_methodinvocationbenchmark0_0(InfraControl control, ThreadParams threadParams) throws Throwable {
+    MethodInvocationBenchmark_jmhType _jmh_tryInit_f_methodinvocationbenchmark0_0(InfraControl control) throws Throwable {
+        if (control.isFailing) throw new FailureAssistException();
         MethodInvocationBenchmark_jmhType val = f_methodinvocationbenchmark0_0;
         if (val == null) {
             val = new MethodInvocationBenchmark_jmhType();
@@ -367,13 +373,14 @@ public final class MethodInvocationBenchmark_indyDirectInvocation_jmhTest {
         return val;
     }
     
-    MethodInvocationBenchmark_MyState_jmhType f_mystate2_2;
+    MethodInvocationBenchmark_MyState_jmhType f_mystate1_1;
     
-    MethodInvocationBenchmark_MyState_jmhType _jmh_tryInit_f_mystate2_2(InfraControl control, ThreadParams threadParams) throws Throwable {
-        MethodInvocationBenchmark_MyState_jmhType val = f_mystate2_2;
+    MethodInvocationBenchmark_MyState_jmhType _jmh_tryInit_f_mystate1_1(InfraControl control) throws Throwable {
+        if (control.isFailing) throw new FailureAssistException();
+        MethodInvocationBenchmark_MyState_jmhType val = f_mystate1_1;
         if (val == null) {
             val = new MethodInvocationBenchmark_MyState_jmhType();
-            f_mystate2_2 = val;
+            f_mystate1_1 = val;
         }
         return val;
     }

@@ -18,12 +18,6 @@ public class ClientService extends Thread{
 
     ClientService(JTextArea txtMsg){
         this.txtMsg = txtMsg;
-//        try {
-//            client = new Socket("localhost", 8888);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        communicator = new Communicator(client);
     }
 
     public void run(){

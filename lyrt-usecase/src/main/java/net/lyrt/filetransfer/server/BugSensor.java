@@ -11,10 +11,6 @@ public class BugSensor implements Thread.UncaughtExceptionHandler {
 //    private Socket socket;
     private ServiceHandler clientHandler;
 
-//    public BugSensor(Socket socket){
-//        this.socket = socket;
-//    }
-
     public BugSensor(ServiceHandler client){
         this.clientHandler = client;
     }
@@ -42,9 +38,7 @@ public class BugSensor implements Thread.UncaughtExceptionHandler {
         AppState.appendMessage(t.getName() + ">>>>> Rollback >>>> ");
         DumpHelper.dumpRelations(comp);
 
-        AppState.serverService.restartService(clientHandler);
         //Restart the socket thread
-//        ServiceHandler handler = new ServiceHandler(socket, true);
-//        handler.start();
+        AppState.serverService.restartService(clientHandler);
     }
 }

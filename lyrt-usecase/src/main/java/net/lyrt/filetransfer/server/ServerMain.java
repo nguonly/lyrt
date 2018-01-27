@@ -17,17 +17,11 @@ public class ServerMain extends JFrame {
     private AdaptationPanel adaptationPanel;
 
     public ServerMain() throws Throwable{
-//        Thread.setDefaultUncaughtExceptionHandler(new BugSensor());
-
-//        ByteBuddyAgent.install();
-
         Registry reg = Registry.getRegistry();
         ClassReloader.classPath = "lyrt-usecase" + File.separator + "target" + File.separator + "classes";
 
         AppState.channel = reg.newCore(Channel.class);
 
-//        AppState.compartment = reg.newCompartment(Compartment.class);
-//        comp.activate();
         AppState.txtMsg = new JTextArea();
 
         serverPanel = new StartingServerPanel();
