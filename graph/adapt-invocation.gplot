@@ -1,0 +1,5 @@
+set logscale y
+set style fill solid
+set style histogram rowstacked
+set style data histogram
+plot "adapt-invocation.csv" using 2:xtic(1) with boxes, '' using 2 title "Adaptation", '' using 3 title 'Invocation'

@@ -1,0 +1,24 @@
+#1  33.758
+#2  0.91
+#3  1.048
+#4    0.982
+#5  0.927
+#6  1.203
+#7  0.811
+#8  0.743
+#9 8.498
+#10  9.77
+#11 10.113
+
+
+#1   bytebuddyProxy	33.758
+2   cglibProxy	0.91
+3   javassistProxy	1.048
+4   jdkProxy	0.982
+5   indyDirectInvocation	0.927
+6   indyLookupMethodInvocation    1.203
+7   reflectionInvocation	       0.811
+8   staticInvocation	0.743
+9   LyRT-ZeroRole	8.498
+10  LyRT-OneRole	9.77
+11  LyRT-TwoRoles	10.113

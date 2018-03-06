@@ -1,0 +1,52 @@
+reset
+unset key
+bm = 0.15
+lm = 0.12
+rm = 0.95
+gap = 0.03
+size = 0.75
+kk = 0.5 # relative height of bottom plot
+y1 = 0.0; y2 = 30.0; y3 = 900.0; y4 = 1250.0
+
+
+set grid y
+set auto x
+#set nokey #remove legend
+set boxwidth 1
+set style fill pattern 1 border -1
+set style data histograms
+#set xtics rotate by 45 right
+
+set multiplot
+set border 1+2+8
+set xtics nomirror
+set ytics nomirror
+set lmargin at screen lm
+set rmargin at screen rm
+set bmargin at screen bm
+set tmargin at screen bm + size * kk
+
+set yrange [y1:y2]
+plot 'recovery.csv' using 2:xtic(1) title "Checkpoint" , '' using 3 title "Rollback"
+
+unset xtics
+unset xlabel
+set title "Overhead on Checkpoint and Rollback"
+set key on left top vertical noreverse noenhanced autotitle nobox
+
+set border 2+4+8
+set bmargin at screen bm + size * kk + gap
+set tmargin at screen bm + size + gap
+set yrange [y3:y4]
+
+set label 'Execution time (millisecond)' at screen 0.03, bm + 0.5 * (size + gap) offset 0,-strlen("Execution time (millisecond)")/4.0 rotate by 90
+
+#set arrow from screen lm - gap / 4.0, bm + size * (abs(y2-y1) / (abs(y2-y1)+abs(y4-y3) ) ) - gap / 4.0 to screen \
+#lm + gap / 4.0, bm + size * (abs(y2-y1) / (abs(y2-y1) + abs(y4-y3) ) ) + gap / 4.0 nohead
+
+#set arrow from screen lm - gap / 4.0, bm + size * (abs(y2-y1) / (abs(y2-y1)+abs(y4-y3) ) ) - gap / 4.0  + gap to screen \
+#lm + gap / 4.0, bm + size * (abs(y2-y1) / (abs(y2-y1) + abs(y4-y3) ) ) + gap / 4.0 + gap nohead
+
+plot 'recovery.csv' using 2:xtic(1) title "Checkpoint" , '' using 3 title "Rollback", '' using 0:2:2 title "" with labels offset 0, 0.5, '' using 0:3:3 title "" with labels offset 0, 0.5
+
+unset multiplot
